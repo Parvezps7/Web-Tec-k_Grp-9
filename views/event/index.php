@@ -15,6 +15,7 @@ $pageTitle = 'Events — EMT';
     </div>
 </form>
 <div class="row g-3">
+    
     <?php foreach ($events as $ev): ?>
         <div class="col-md-6 col-lg-4">
             <div class="card h-100 shadow-sm">
@@ -37,5 +38,5 @@ $pageTitle = 'Events — EMT';
 </div>
 <?php if (count($events) === 0): ?>
     <p class="text-muted mt-3">No events match your search.</p>
-    
+
 <?php endif; ?>
