@@ -171,4 +171,40 @@ class EventController extends BaseController
                 }
             }
         }
+
+        if (!Event::update($db, $id, $user['id'], $categoryId, $title, $description, $eventDate, $location, $ticketPrice, $totalSeats, $imagePath, $replaceImage)) {
+            flash('error', 'Could not update event.');
+            redirect(url('event', 'edit', ['id' => $id]));
+        }
+        flash('success', 'Event updated.');
+        redirect(url('event', 'mine'));
+    }
+
+    public function delete(): void
+    {
+        require_role('organiser');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect(url('event', 'mine'));
+        }
+        $user = current_user();
+        $id = (int) ($_POST['id'] ?? 0);
+        if ($id < 1) {
+            redirect(url('event', 'mine'));
+        }
+        $db = connect_db();
+        $existing = Event::find($db, $id);
+        if ($existing && (int) $existing['organiser_id'] === $user['id']) {
+            if (!empty($existing['image'])) {
+                $path = UPLOAD_PATH . '/' . $existing['image'];
+                if (is_file($path)) {
+                    @unlink($path);
+                }
+            }
+            Event::deleteByOrganiser($db, $id, $user['id']);
+            flash('success', 'Event deleted.');
+        } else {
+            flash('error', 'Could not delete event.');
+        }
+        redirect(url('event', 'mine'));
+    }
 }
