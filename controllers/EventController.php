@@ -86,6 +86,12 @@ class EventController extends BaseController
                 redirect(url('event', 'create'));
             }
         }
-
-       
+   
+         if (!Event::create($db, $user['id'], $categoryId, $title, $description, $eventDate, $location, $ticketPrice, $totalSeats, $imageName)) {
+            flash('error', 'Could not create event.');
+            redirect(url('event', 'create'));
+        }
+        flash('success', 'Event created.');
+        redirect(url('event', 'mine'));
+    } 
 }
