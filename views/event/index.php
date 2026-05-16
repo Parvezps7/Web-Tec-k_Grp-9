@@ -37,4 +37,5 @@ $pageTitle = 'Events — EMT';
 </div>
 <?php if (count($events) === 0): ?>
     <p class="text-muted mt-3">No events match your search.</p>
+    
 <?php endif; ?>
