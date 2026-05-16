@@ -138,5 +138,37 @@ class EventController extends BaseController
         $location = trim((string) ($_POST['location'] ?? ''));
         $ticketPrice = (float) ($_POST['ticket_price'] ?? 0);
         $totalSeats = (int) ($_POST['total_seats'] ?? 0);
-    }
+
+        if ($title === '' || $location === '' || $eventDate === '' || $categoryId < 1) {
+            flash('error', 'Please fill all required fields.');
+            redirect(url('event', 'edit', ['id' => $id]));
+        }
+        if ($totalSeats < 1) {
+            flash('error', 'Total seats must be at least 1.');
+            redirect(url('event', 'edit', ['id' => $id]));
+        }
+        if (!Category::find($db, $categoryId)) {
+            flash('error', 'Invalid category.');
+            redirect(url('event', 'edit', ['id' => $id]));
+        }
+        if ($ticketPrice < 0) {
+            $ticketPrice = 0;
+        }
+
+        $replaceImage = false;
+        $imagePath = null;
+        if (!empty($_FILES['image']['name'])) {
+            $imagePath = save_event_upload($_FILES['image']);
+            if ($imagePath === null) {
+                flash('error', 'Image upload failed. Use JPG, PNG or WEBP under 2MB.');
+                redirect(url('event', 'edit', ['id' => $id]));
+            }
+            $replaceImage = true;
+            if (!empty($existing['image'])) {
+                $old = UPLOAD_PATH . '/' . $existing['image'];
+                if (is_file($old)) {
+                    @unlink($old);
+                }
+            }
+        }
 }
