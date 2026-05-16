@@ -45,5 +45,38 @@ class EventController extends BaseController
         $this->view('event/form', ['categories' => $categories, 'event' => null]);
     }
 
-    
+    public function store(): void
+    {
+        require_role('organiser');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect(url('event', 'create'));
+        }
+        $user = current_user();
+        $db = connect_db();
+
+        $categoryId = (int) ($_POST['category_id'] ?? 0);
+        $title = trim((string) ($_POST['title'] ?? ''));
+        $description = trim((string) ($_POST['description'] ?? ''));
+        $eventDate = trim((string) ($_POST['event_date'] ?? ''));
+        $location = trim((string) ($_POST['location'] ?? ''));
+        $ticketPrice = (float) ($_POST['ticket_price'] ?? 0);
+        $totalSeats = (int) ($_POST['total_seats'] ?? 0);
+
+        if ($title === '' || $location === '' || $eventDate === '' || $categoryId < 1) {
+            flash('error', 'Please fill all required fields.');
+            redirect(url('event', 'create'));
+        }
+        if ($totalSeats < 1) {
+            flash('error', 'Total seats must be at least 1.');
+            redirect(url('event', 'create'));
+        }
+        if (!Category::find($db, $categoryId)) {
+            flash('error', 'Invalid category.');
+            redirect(url('event', 'create'));
+        }
+        if ($ticketPrice < 0) {
+            $ticketPrice = 0;
+        }
+
+        
 }
