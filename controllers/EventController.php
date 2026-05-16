@@ -94,4 +94,22 @@ class EventController extends BaseController
         flash('success', 'Event created.');
         redirect(url('event', 'mine'));
     } 
+
+     public function edit(): void
+    {
+        require_role('organiser');
+        $id = (int) ($_GET['id'] ?? 0);
+        if ($id < 1) {
+            redirect(url('event', 'mine'));
+        }
+        $user = current_user();
+        $db = connect_db();
+        $event = Event::find($db, $id);
+        if (!$event || (int) $event['organiser_id'] !== $user['id']) {
+            flash('error', 'Event not found.');
+            redirect(url('event', 'mine'));
+        }
+        $categories = Category::all($db);
+        $this->view('event/form', ['categories' => $categories, 'event' => $event]);
+    }
 }
