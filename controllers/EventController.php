@@ -78,5 +78,14 @@ class EventController extends BaseController
             $ticketPrice = 0;
         }
 
-        
+        $imageName = null;
+        if (!empty($_FILES['image']['name'])) {
+            $imageName = save_event_upload($_FILES['image']);
+            if ($imageName === null) {
+                flash('error', 'Image upload failed. Use JPG, PNG or WEBP under 2MB.');
+                redirect(url('event', 'create'));
+            }
+        }
+
+       
 }
