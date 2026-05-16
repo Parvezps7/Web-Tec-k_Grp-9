@@ -86,16 +86,16 @@ class EventController extends BaseController
                 redirect(url('event', 'create'));
             }
         }
-   
-         if (!Event::create($db, $user['id'], $categoryId, $title, $description, $eventDate, $location, $ticketPrice, $totalSeats, $imageName)) {
+
+        if (!Event::create($db, $user['id'], $categoryId, $title, $description, $eventDate, $location, $ticketPrice, $totalSeats, $imageName)) {
             flash('error', 'Could not create event.');
             redirect(url('event', 'create'));
         }
         flash('success', 'Event created.');
         redirect(url('event', 'mine'));
-    } 
+    }
 
-     public function edit(): void
+    public function edit(): void
     {
         require_role('organiser');
         $id = (int) ($_GET['id'] ?? 0);
@@ -111,5 +111,32 @@ class EventController extends BaseController
         }
         $categories = Category::all($db);
         $this->view('event/form', ['categories' => $categories, 'event' => $event]);
+    }
+
+    public function update(): void
+    {
+        require_role('organiser');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            redirect(url('event', 'mine'));
+        }
+        $user = current_user();
+        $db = connect_db();
+        $id = (int) ($_POST['id'] ?? 0);
+        if ($id < 1) {
+            redirect(url('event', 'mine'));
+        }
+        $existing = Event::find($db, $id);
+        if (!$existing || (int) $existing['organiser_id'] !== $user['id']) {
+            flash('error', 'Event not found.');
+            redirect(url('event', 'mine'));
+        }
+
+        $categoryId = (int) ($_POST['category_id'] ?? 0);
+        $title = trim((string) ($_POST['title'] ?? ''));
+        $description = trim((string) ($_POST['description'] ?? ''));
+        $eventDate = trim((string) ($_POST['event_date'] ?? ''));
+        $location = trim((string) ($_POST['location'] ?? ''));
+        $ticketPrice = (float) ($_POST['ticket_price'] ?? 0);
+        $totalSeats = (int) ($_POST['total_seats'] ?? 0);
     }
 }
