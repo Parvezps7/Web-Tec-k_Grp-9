@@ -203,4 +203,30 @@ class Event
         $stmt->close();
         return $ok;
     }
+
+    public static function deleteByOrganiser(mysqli $db, int $id, int $organiserId): bool
+    {
+        $sql = 'DELETE FROM events WHERE id = ? AND organiser_id = ?';
+        $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+        $stmt->bind_param('ii', $id, $organiserId);
+        $ok = $stmt->execute();
+        $stmt->close();
+        return $ok;
+    }
+
+    public static function deleteById(mysqli $db, int $id): bool
+    {
+        $sql = 'DELETE FROM events WHERE id = ?';
+        $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            return false;
+        }
+        $stmt->bind_param('i', $id);
+        $ok = $stmt->execute();
+        $stmt->close();
+        return $ok;
+    }
 }
