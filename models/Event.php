@@ -229,4 +229,22 @@ class Event
         $stmt->close();
         return $ok;
     }
+
+    public static function getAvailableSeats(mysqli $db, int $eventId): ?int
+    {
+        $sql = 'SELECT available_seats FROM events WHERE id = ? LIMIT 1';
+        $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            return null;
+        }
+        $stmt->bind_param('i', $eventId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $row = $res->fetch_assoc();
+        $stmt->close();
+        if (!$row) {
+            return null;
+        }
+        return (int) $row['available_seats'];
+    }
 }
