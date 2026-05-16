@@ -34,6 +34,7 @@
                         fb.className = 'small text-warning';
                     }
                 })
+                
                 .catch(function () {
                     fb.textContent = 'Network error.';
                     fb.className = 'small text-danger';
