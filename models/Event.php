@@ -40,39 +40,3 @@ class Event
         $stmt->close();
         return $rows;
     }
-
-    public static function allForAdmin(mysqli $db): array
-    {
-        $sql = 'SELECT e.*, c.name AS category_name, u.name AS organiser_name
-                FROM events e
-                JOIN categories c ON c.id = e.category_id
-                JOIN users u ON u.id = e.organiser_id
-                ORDER BY e.id DESC';
-        $stmt = $db->prepare($sql);
-        if (!$stmt || !$stmt->execute()) {
-            return [];
-        }
-        $res = $stmt->get_result();
-        $rows = $res->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-        return $rows;
-    }
-
-    public static function forOrganiser(mysqli $db, int $organiserId): array
-    {
-        $sql = 'SELECT e.*, c.name AS category_name
-                FROM events e
-                JOIN categories c ON c.id = e.category_id
-                WHERE e.organiser_id = ?
-                ORDER BY e.event_date DESC';
-        $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            return [];
-        }
-        $stmt->bind_param('i', $organiserId);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        $rows = $res->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-        return $rows;
-    }
