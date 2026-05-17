@@ -208,3 +208,4 @@ class EventController extends BaseController
         redirect(url('event', 'mine'));
     }
 }
+}
