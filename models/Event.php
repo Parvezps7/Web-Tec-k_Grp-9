@@ -163,7 +163,7 @@ class Event
             if (!$stmt) {
                 return false;
             }
-            // Types: category(i), 4Ãstring, price(d), total(i), available(i), image(s), id(i), organiser(i)
+            // Types: category(i), 4×string, price(d), total(i), available(i), image(s), id(i), organiser(i)
             $stmt->bind_param(
                 'issssdiisii',
                 $categoryId,
